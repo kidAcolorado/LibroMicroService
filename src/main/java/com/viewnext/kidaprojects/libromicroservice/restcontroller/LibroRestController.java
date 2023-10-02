@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.viewnext.kidaprojects.libromicroservice.model.Libro;
+import com.viewnext.kidaprojects.libromicroservice.service.LibroService;
 import com.viewnext.kidaprojects.libromicroservice.service.LibroServiceImpl;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -35,7 +36,7 @@ import jakarta.persistence.EntityNotFoundException;
 public class LibroRestController {
 
 	@Autowired
-	private LibroServiceImpl libroServiceImpl;
+	private LibroService libroService;
 
 	private static final String LIBRO_NOT_FOUND = "Libro/s con los argumentos introducidos no encontrado";
 	private static final String INVALID_PRECIO = "Formato de argumento(Precio) inválido";
@@ -49,7 +50,7 @@ public class LibroRestController {
 	@GetMapping(value = "libros", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> mostrarLibros() {
 		try {
-			List<Libro> listaLibros = libroServiceImpl.mostrarlibros();
+			List<Libro> listaLibros = libroService.mostrarlibros();
 
 			return ResponseEntity.ok(listaLibros);
 		} catch (EntityNotFoundException e) {
@@ -68,7 +69,7 @@ public class LibroRestController {
 	public ResponseEntity<?> mostrarLibroByIsbn(@PathVariable("isbn") String isbn) {
 
 		try {
-			Libro libro = libroServiceImpl.mostrarLibroPorIsbn(isbn);
+			Libro libro = libroService.mostrarLibroPorIsbn(isbn);
 			return ResponseEntity.ok(libro);
 		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(LIBRO_NOT_FOUND);
@@ -86,7 +87,7 @@ public class LibroRestController {
 	@GetMapping(value = "libros/titulo/{titulo}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> mostrarLibroByTitulo(@PathVariable("titulo") String titulo) {
 		try {
-			List<Libro> listaLibrosPorTitulo = libroServiceImpl.mostrarLibrosPorTitulo(titulo);
+			List<Libro> listaLibrosPorTitulo = libroService.mostrarLibrosPorTitulo(titulo);
 			return ResponseEntity.ok(listaLibrosPorTitulo);
 		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(LIBRO_NOT_FOUND);
@@ -104,7 +105,7 @@ public class LibroRestController {
 	@GetMapping(value = "libros/autor/{autor}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> mostrarLibrosByAutor(@PathVariable("autor") String autor) {
 		try {
-			List<Libro> listaLibrosPorAutor = libroServiceImpl.mostrarLibrosPorAutor(autor);
+			List<Libro> listaLibrosPorAutor = libroService.mostrarLibrosPorAutor(autor);
 			return ResponseEntity.ok(listaLibrosPorAutor);
 		} catch (EntityNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(LIBRO_NOT_FOUND);
@@ -122,7 +123,7 @@ public class LibroRestController {
 	@PostMapping(value = "libro", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createLibro(@RequestBody Libro libroParaCrear) {
 		try {
-			Libro libroCreado = libroServiceImpl.crearLibro(libroParaCrear);
+			Libro libroCreado = libroService.crearLibro(libroParaCrear);
 			return ResponseEntity.ok(libroCreado);
 		} catch (NumberFormatException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_PRECIO);
@@ -138,7 +139,7 @@ public class LibroRestController {
 	@PostMapping(value = "libros", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createVariosLibro(@RequestBody List<Libro> listaLibroParaCrear) {
 	    try {
-	        List<Libro> listalibrosCreados = libroServiceImpl.crearVariosLibros(listaLibroParaCrear);
+	        List<Libro> listalibrosCreados = libroService.crearVariosLibros(listaLibroParaCrear);
 	        return ResponseEntity.ok(listalibrosCreados);
 	    } catch (NumberFormatException e) {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_PRECIO);
@@ -155,7 +156,7 @@ public class LibroRestController {
 	@PutMapping(value = "libro", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateLibro(@RequestBody Libro libroParaActualizar) {
 	    try {
-	        Libro libroActualizado = libroServiceImpl.actualizarLibro(libroParaActualizar);
+	        Libro libroActualizado = libroService.actualizarLibro(libroParaActualizar);
 	        return ResponseEntity.ok(libroActualizado);
 	    } catch (EntityNotFoundException e) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(LIBRO_NOT_FOUND);
@@ -175,7 +176,7 @@ public class LibroRestController {
 	public ResponseEntity<?> deleteLibro(@PathVariable("isbn") String isbn) {
 
 		try {
-			libroServiceImpl.borrarLibroPorIsbn(isbn);
+			libroService.borrarLibroPorIsbn(isbn);
 
 			return ResponseEntity.noContent().build();
 
